@@ -28,12 +28,21 @@ PRODUCT_COMPATIBLE_PROPERTY_OVERRIDE := true
 # Overlays
 DEVICE_PACKAGE_OVERLAYS += \
     $(LOCAL_PATH)/overlay \
-    $(LOCAL_PATH)/overlay-lineage
+    $(LOCAL_PATH)/overlay-common
 
-PRODUCT_ENFORCE_RRO_TARGETS := *
-PRODUCT_ENFORCE_RRO_EXCLUDED_OVERLAYS += \
-    $(LOCAL_PATH)/overlay-lineage/lineage-sdk \
-    $(LOCAL_PATH)/overlay-lineage/packages/apps/Snap
+ifneq ($(SMARTBUILD_RELEASE),)
+    ifneq ($(wildcard $(LOCAL_PATH)/overlay-$(SMARTBUILD_RELEASE)/.),)
+        DEVICE_PACKAGE_OVERLAYS += \
+            $(LOCAL_PATH)/overlay-$(SMARTBUILD_RELEASE)
+    endif
+endif
+
+ifeq ($(SMARTBUILD_RELEASE),lineage)
+    PRODUCT_ENFORCE_RRO_TARGETS := *
+    PRODUCT_ENFORCE_RRO_EXCLUDED_OVERLAYS += \
+        $(LOCAL_PATH)/overlay-lineage/lineage-sdk \
+        $(LOCAL_PATH)/overlay-common/packages/apps/Snap
+endif
 
 # Soong namespaces
 PRODUCT_SOONG_NAMESPACES += \
